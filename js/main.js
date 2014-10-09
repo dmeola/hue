@@ -5,18 +5,16 @@
 */
 
 // Variable Definitions
-var on = '{"on": true, "transistiontime": 1}',
-	off = '{"on": false, "transistiontime": 1}',
-	orange = '{"on": true,"bri": 248,"hue": 5594,"sat": 252, "transistiontime": 1}',
-	red = '{"on": true,"bri": 254,"hue": 65527,"sat": 253, "transistiontime": 1}',
-	white = '{"on": true,"bri": 254,"hue": 34106,"sat": 254, "transistiontime": 1}',
-	breathe = '{"alert": "lselect", "transistiontime": 6}',
+var on = '{"on": true, "transitiontime": 1}',
+	off = '{"on": false, "transitiontime": 1}',
+	orange = '{"on": true,"bri": 248,"hue": 5594,"sat": 252, "transitiontime": 1}',
+	red = '{"on": true,"bri": 254,"hue": 65527,"sat": 253, "transitiontime": 1}',
+	white = '{"on": true,"bri": 254,"hue": 34106,"sat": 254, "transitiontime": 1}',
+	// breathe = '{"alert": "lselect", "transitiontime": 6}',
 	numberOfLights = 4,
 	response;
 
-var buttonList = ['on-switch', 'off-switch', 'white', 'red', 'breathe', 'play', 'stop'];
-
-
+var buttonList = ['on', 'off', 'white', 'red', 'breathe', 'play', 'stop'];
 
 function init () {
 	getInfo(null, buildUI);
@@ -58,11 +56,11 @@ function initTriggers () {
 		e.preventDefault();
 	});
 
-	$('.on-switch').on("click", function() {
+	$('.on').on("click", function() {
 		sendCommand($(this).attr("data-light"), on);
 	});
 
-	$('.off-switch').on("click", function() {
+	$('.off').on("click", function() {
 		sendCommand($(this).attr("data-light"), off);
 	});
 
@@ -75,7 +73,7 @@ function initTriggers () {
 	});
 
 	$('.breathe').on("click", function() {
-		sendCommand($(this).attr("data-light"), breathe);
+		breathe($(this).attr("data-light"));
 	});
 
 	$('.play').on("click", function() {
@@ -162,6 +160,18 @@ function play(lightId){
 //finish this
 function stop() {
 	clearInterval(intervalId);
+}
+
+function breathe(lightId) {
+	var counter = 0;
+	var interval = setInterval(function() {
+		hue = Math.abs(Math.floor(Math.sin(counter)*254));
+		console.log('hue: ' +hue);
+		sendCommand(4, '{"bri": '+hue+'}');
+		counter += .15;
+		
+		if (counter > 20) clearInterval(interval);
+	}, 300);
 }
 
 init();
